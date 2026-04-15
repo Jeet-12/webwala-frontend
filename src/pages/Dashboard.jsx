@@ -4,9 +4,11 @@ import api from '../api/axios';
 import Navbar from '../components/Navbar';
 import TaskCard from '../components/TaskCard';
 import toast from 'react-hot-toast';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import {
   Plus, X, Search, ListTodo, CheckCheck, Clock,
-  ChevronDown, SlidersHorizontal, Loader2,
+  ChevronDown, SlidersHorizontal, Loader2, CalendarDays,
 } from 'lucide-react';
 
 const PRIORITIES = ['low', 'medium', 'high'];
@@ -77,7 +79,7 @@ const Dashboard = () => {
       title: task.title,
       description: task.description || '',
       priority: task.priority,
-      dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
+      dueDate: task.dueDate ? new Date(task.dueDate) : null,
     });
     setFormErrors({});
     setShowForm(true);
@@ -108,7 +110,7 @@ const Dashboard = () => {
         title: form.title.trim(),
         description: form.description.trim(),
         priority: form.priority,
-        dueDate: form.dueDate || null,
+        dueDate: form.dueDate ? form.dueDate.toISOString().split('T')[0] : null,
       };
 
       if (editTask) {
@@ -332,16 +334,24 @@ const Dashboard = () => {
                     ))}
                   </select>
                 </div>
-                <div className="form-group">
+                <div className="form-group datepicker-group">
                   <label htmlFor="task-due">Due Date</label>
-                  <input
-                    id="task-due"
-                    type="date"
-                    name="dueDate"
-                    value={form.dueDate}
-                    onChange={handleFormChange}
-                    min={new Date().toISOString().split('T')[0]}
-                  />
+                  <div className="datepicker-wrap">
+                    <CalendarDays size={15} className="datepicker-icon" />
+                    <DatePicker
+                      id="task-due"
+                      selected={form.dueDate}
+                      onChange={(date) => setForm((prev) => ({ ...prev, dueDate: date }))}
+                      minDate={new Date()}
+                      placeholderText="Pick a date…"
+                      dateFormat="dd MMM yyyy"
+                      isClearable
+                      showPopperArrow={false}
+                      calendarClassName="dp-calendar"
+                      className="dp-input"
+                      popperPlacement="bottom-start"
+                    />
+                  </div>
                 </div>
               </div>
 
